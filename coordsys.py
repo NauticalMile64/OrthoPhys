@@ -18,8 +18,8 @@ x,y,z = symbols('x y z', real = True)
 #crdDefs = Matrix([x,y,z])
 
 # Cylindrical
-crds = [r,theta,z]
-crdDefs = Matrix([r*cos(theta),r*sin(theta),z])
+#crds = [r,theta,z]
+#crdDefs = Matrix([r*cos(theta),r*sin(theta),z])
 
 #Spherical
 #phi = symbols('phi', real = True, positive = True)
@@ -27,16 +27,15 @@ crdDefs = Matrix([r*cos(theta),r*sin(theta),z])
 #crdDefs = Matrix([r*cos(theta)*sin(phi),r*sin(theta)*sin(phi),r*cos(phi)])
 
 #Toroidal
-#phi = symbols('phi', real = True)
-#crds = [sigma,tau,phi]
-#crdDefs = Matrix([cos(phi)*sinh(tau), sin(phi)*sinh(tau), sin(sigma)])*a/(cosh(tau)-cos(sigma))
+phi = symbols('phi', real = True)
+crds = [sigma,tau,phi]
+crdDefs = Matrix([cos(phi)*sinh(tau), sin(phi)*sinh(tau), sin(sigma)])*a/(cosh(tau)-cos(sigma))
 
 # #############################
 
 Rn = len(crds)
 print('####### Co-ordinates')
 print(latex(crdDefs))
-print(crdDefs)
 
 #Compute the derivatives of each of the co-ordinate definitions with respect to each co-ordinate
 dcrds = [[simplify(diff(crdDef,crd)) for crdDef in crdDefs] for crd in crds]
@@ -50,6 +49,14 @@ for i in range(Rn):
 
 print('####### Scale Factors')
 print(latex(h))
+
+# Volume element
+dVc = 1
+for i in range(Rn):
+	dVc *= h[i]
+
+print('####### Volume Element Coeff.')
+print(latex(dVc))
 
 #Define the unit vectors for the co-ordinate system: http://mathworld.wolfram.com/UnitVector.html
 uvecs = zeros(Rn)
@@ -77,9 +84,9 @@ Tau2 = [zeros(Rn) for i in range(Rn)]
 for i in range(Rn):
 	for j in range(Rn):
 		for k in range(Rn):
-			expr = (diff(g[i,k],crds[j])
+			expr = simplify((diff(g[i,k],crds[j])
 				+	diff(g[j,k],crds[i])
-				-	diff(g[i,j],crds[k]))/2
+				-	diff(g[i,j],crds[k]))/2)
 			for m in range(Rn):
 				Tau2[m][i,j] += gi[k,m]*expr
 				#Tau2[m][i,j] = simplify(Tau2[m][i,j])
@@ -87,3 +94,8 @@ Tau2 = simplify(Tau2)
 
 print('####### Christoffel Symbols')
 print(latex(Tau2))
+
+# ########################
+rho, c, k, T, t = symbols('rho c k T t', real=True, positive=True)
+
+#consE = rho*c*diff(T,t) - grad(-k*grad(T))

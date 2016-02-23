@@ -1,0 +1,7 @@
+TODO:
+Come up with a way to represent vector calculus equations
+Conservation of Energy
+Conservation of Mass
+Conservation of Momentum
+Discretizations
+Absolute value problem
